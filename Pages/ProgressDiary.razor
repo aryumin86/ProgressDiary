@@ -1,0 +1,66 @@
+@page "/progressdiary"
+
+@using DayProgress.Data
+@using System.Threading;
+@inject Services.ProgressService ProgressService
+@inject IToastService ToastService
+
+<div id='progressHeaderContainer'>
+    <button class="btn btn-primary" @onclick="ShowNewProgressEntryModal">New progress</button>
+    <select class="form-control" id="progressPeriodSelect">
+        <option>today</option>
+        <option>yesturday</option>
+        <option>7 days</option>
+        <option>30 days</option>
+        <option>all</option>
+    </select>
+    @if(_progressTags != null){
+        <select class="form-control"  id="progressTagSelect"></select>
+    }
+    
+</div>
+
+<div id='progressItemsContainer'>
+    @foreach (var pe in _progressEntries)
+    {        
+        <div class='progressEntry'>
+            <div class="progressItemCreateDate">@pe.WhenCreated</div>
+            <div class="btn removeProgressItemButton oi oi-trash" @onclick="(() => OnDeleteProgressEntry(pe.Id))"></div>
+            <div class="progressItemContent">@pe.Content</div>            
+
+            @if(@pe.Tags != null){
+                <div class="progressItemTags">
+                    tags: @(string.Join("; ", pe.Tags.Select(t => t.Title)))
+                </div>
+            }            
+        </div>
+    }
+    
+</div>
+
+@code {
+    private IEnumerable<ProgressTag> _progressTags;
+    private IEnumerable<ProgressEntry> _progressEntries;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _progressEntries = await ProgressService.GetProgressAsync();
+        _progressTags = await ProgressService.GetProgressTagsAsync();
+
+    }
+
+    public void ShowNewProgressEntryModal(){
+        ToastService.ShowSuccess("hohohohohoho");
+    }
+
+    private void OnDeleteProgressEntry(int id)
+    {
+        _progressEntries = _progressEntries.Where(pe => pe.Id != id);
+        ProgressService.DeleteProgressEntryAsync(id);
+    }
+
+    private void OnUpdateProgressEntry(ProgressEntry pe)
+    {
+
+    }
+}

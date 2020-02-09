@@ -1,0 +1,22 @@
+﻿create table ProgressEntries
+(
+ Id int(11) not null auto_increment,
+ Content varchar(2000), 
+ WhenCreated DATETIME DEFAULT   CURRENT_TIMESTAMP,
+ constraint pk primary key (Id)
+);
+
+create table ProgressTags
+(
+ Id int(11) not null auto_increment,
+ Title varchar(50),
+ constraint pk primary key (Id)
+);
+
+create table EntryTags
+(
+ Id int(11) not null auto_increment,
+ EntryId int(11) not null,
+ TagId int(11) not null,
+ constraint pk primary key (Id)
+);
