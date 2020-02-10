@@ -1,0 +1,43 @@
+﻿@using DayProgress.Data
+@inject DayProgress.Services.ProgressService ProgressService
+@inject IModalService ModalService
+@inject IToastService ToastService
+
+<div class="simple-form">
+    <div class="form-group">
+        <textarea rows="5" @bind="pe.Content" class="form-control" id="entryContent"
+                  placeholder="Enter progress entry data" />
+    </div>
+    <button @onclick="CreateProgressEntry" class="btn btn-primary">Submit</button>
+    <button @onclick="Cancel" class="btn btn-secondary">Cancel</button>
+</div>
+
+@code {
+    ProgressEntry pe = new ProgressEntry();
+
+    protected override async Task OnInitializedAsync()
+    {
+        //pe = new ProgressEntry();
+    }
+
+    private void CreateProgressEntry()
+    {
+        try
+        {
+            ProgressService.CreateProgressEntry(pe);
+            ModalService.Close(ModalResult.Ok($"Form was submitted successfully."));
+            ToastService.ShowSuccess("New entry was created");
+        }
+        catch (Exception ex)
+        {
+            ModalService.Close(ModalResult.Ok($"Form was submitted with error."));
+            ToastService.ShowError("Error. Entry wasn't created");
+        }
+
+    }
+
+    private void Cancel()
+    {
+        ModalService.Close(ModalResult.Cancel());
+    }
+}

@@ -16,7 +16,6 @@ namespace DayProgress.Repo
         public ProgressEntryRepo(IConfiguration config){            
             _config = config;
             _dbConnString = _config.GetValue<string>("dbConnectionString");
-            Console.WriteLine(_dbConnString);
         }
         
         public IEnumerable<ProgressEntry> GetProgressEntries(IEnumerable<int> tagsIds, int daysBeforeToday = 7){
@@ -39,7 +38,7 @@ namespace DayProgress.Repo
                         };
 
                         if (!string.IsNullOrWhiteSpace(pe.Content) && pe.Content.Length > _maxContentLengthToDisplay)
-                            pe.Content = pe.Content.Substring(_maxContentLengthToDisplay) + "...";
+                            pe.Content = pe.Content.Substring(0, _maxContentLengthToDisplay) + "...";
 
                         result.Add(pe);
                     }  
@@ -50,7 +49,14 @@ namespace DayProgress.Repo
         }
 
         public void CreateProgressEntry(ProgressEntry entry){
-            throw new NotImplementedException();
+            string query = "insert into ProgressEntries (Content) values (@content)";
+            using (var conn = new MySqlConnection(_dbConnString))
+            {
+                conn.Open();
+                var command = new MySqlCommand(query, conn);
+                command.Parameters.AddWithValue("@content", entry.Content);
+                command.ExecuteNonQuery();
+            }
         }
 
         public void DeleteProgressEntry(int id)

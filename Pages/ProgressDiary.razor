@@ -4,6 +4,9 @@
 @using System.Threading;
 @inject Services.ProgressService ProgressService
 @inject IToastService ToastService
+@inject IModalService Modal
+
+<BlazoredModal Style="blazored-custom-modal"/>
 
 <div id='progressHeaderContainer'>
     <button class="btn btn-primary" @onclick="ShowNewProgressEntryModal">New progress</button>
@@ -14,28 +17,32 @@
         <option>30 days</option>
         <option>all</option>
     </select>
-    @if(_progressTags != null){
-        <select class="form-control"  id="progressTagSelect"></select>
+    @if (_progressTags != null)
+    {
+        <select class="form-control" id="progressTagSelect"></select>
     }
-    
+
 </div>
 
 <div id='progressItemsContainer'>
-    @foreach (var pe in _progressEntries)
-    {        
-        <div class='progressEntry'>
-            <div class="progressItemCreateDate">@pe.WhenCreated</div>
-            <div class="btn removeProgressItemButton oi oi-trash" @onclick="(() => OnDeleteProgressEntry(pe.Id))"></div>
-            <div class="progressItemContent">@pe.Content</div>            
+    @if (_progressEntries != null)
+    {
+        @foreach (var pe in _progressEntries)
+        {
+            <div class='progressEntry'>
+                <div class="progressItemCreateDate">@pe.WhenCreated</div>
+                <div class="btn removeProgressItemButton oi oi-trash" @onclick="(() => OnDeleteProgressEntry(pe.Id))"></div>
+                <div class="progressItemContent">@pe.Content</div>
 
-            @if(@pe.Tags != null){
-                <div class="progressItemTags">
-                    tags: @(string.Join("; ", pe.Tags.Select(t => t.Title)))
-                </div>
-            }            
-        </div>
+                @if (@pe.Tags != null)
+                {
+                    <div class="progressItemTags">
+                        tags: @(string.Join("; ", pe.Tags.Select(t => t.Title)))
+                    </div>
+                }
+            </div>
+        }
     }
-    
 </div>
 
 @code {
@@ -44,23 +51,57 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _progressEntries = await ProgressService.GetProgressAsync();
-        _progressTags = await ProgressService.GetProgressTagsAsync();
-
+        try
+        {
+            _progressEntries = await ProgressService.GetProgressAsync();
+            _progressTags = await ProgressService.GetProgressTagsAsync();
+        }
+        catch(Exception ex)
+        {
+            ToastService.ShowError("Error with progress entries loading");
+        }
     }
 
-    public void ShowNewProgressEntryModal(){
-        ToastService.ShowSuccess("hohohohohoho");
+    public void ShowNewProgressEntryModal()
+    {
+        Modal.OnClose += ModalClosed;
+        Modal.Show<NewProgressEntryModal>("New entry");
     }
 
     private void OnDeleteProgressEntry(int id)
     {
         _progressEntries = _progressEntries.Where(pe => pe.Id != id);
-        ProgressService.DeleteProgressEntryAsync(id);
+        try
+        {
+            ProgressService.DeleteProgressEntryAsync(id);
+            ToastService.ShowSuccess("Entry was deleted");
+        }
+        catch(Exception ex)
+        {
+            ToastService.ShowError("Entry deletion error");
+        }
     }
 
     private void OnUpdateProgressEntry(ProgressEntry pe)
     {
 
+    }
+
+    void ModalClosed(ModalResult modalResult)
+    {
+        if (!modalResult.Cancelled)
+        {
+            try
+            {
+                _progressEntries = ProgressService.GetProgressAsync().Result;
+                InvokeAsync(StateHasChanged);
+            }
+            catch(Exception ex)
+            {
+                ToastService.ShowError("Error with updaring entries list");
+            }
+        }
+
+        Modal.OnClose -= ModalClosed;
     }
 }

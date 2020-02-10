@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using DayProgress.Data;
 using DayProgress.Services;
 using Blazored.Toast;
+using Blazored.Modal;
 
 namespace DayProgress
 {
@@ -34,6 +35,7 @@ namespace DayProgress
             services.AddSingleton<ProgressService>();
             //services.AddScoped<ToastService___>();
             services.AddBlazoredToast();
+            services.AddBlazoredModal();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

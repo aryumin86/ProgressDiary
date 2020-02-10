@@ -89,5 +89,10 @@ namespace DayProgress.Services
             _repo.DeleteProgressEntry(id);
             return Task.FromResult(0);
         }
+
+        public void CreateProgressEntry(ProgressEntry progressEntry)
+        {
+            _repo.CreateProgressEntry(progressEntry);
+        }
     }
 }

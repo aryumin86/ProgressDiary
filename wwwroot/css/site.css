@@ -297,3 +297,19 @@ app {
 
 */
 
+.blazored-custom-modal {
+    display: flex;
+    flex-direction: column;
+    width: 25vw;    
+    background-color: #fafafa;
+    border-radius: 12px;
+    border: 1px solid #fff;
+    padding: 0.5rem;
+    z-index: 102;
+    box-shadow: 0 2px 2px rgba(0,0,0,.75);
+}
+
+.blazored-custom-modal textarea {
+    resize: none;
+}
+
