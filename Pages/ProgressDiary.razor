@@ -10,12 +10,12 @@
 
 <div id='progressHeaderContainer'>
     <button class="btn btn-primary" @onclick="ShowNewProgressEntryModal">New progress</button>
-    <select class="form-control" id="progressPeriodSelect">
-        <option>today</option>
-        <option>yesturday</option>
-        <option>7 days</option>
-        <option>30 days</option>
-        <option>all</option>
+    <select class="form-control" id="progressPeriodSelect" @onchange="OnPeriodChanged">
+        <option value="0">today</option>
+        <option value="1">yesturday</option>
+        <option value="7">7 days</option>
+        <option value="30">30 days</option>
+        <option value="9999">all</option>
     </select>
     @if (_progressTags != null)
     {
@@ -32,7 +32,7 @@
             <div class='progressEntry'>
                 <div class="progressItemCreateDate">@pe.WhenCreated</div>
                 <div class="btn removeProgressItemButton oi oi-trash" @onclick="(() => OnDeleteProgressEntry(pe.Id))"></div>
-                <div class="progressItemContent">@pe.Content</div>
+                <div class="progressItemContent" @onclick="(() => ShowEditProgressEntryModal(pe))">@pe.ContentToShow</div>
 
                 @if (@pe.Tags != null)
                 {
@@ -48,12 +48,13 @@
 @code {
     private IEnumerable<ProgressTag> _progressTags;
     private IEnumerable<ProgressEntry> _progressEntries;
+    private int currentSelectedPeriod = 1;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            _progressEntries = await ProgressService.GetProgressAsync();
+            _progressEntries = await ProgressService.GetProgressAsync(currentSelectedPeriod);
             _progressTags = await ProgressService.GetProgressTagsAsync();
         }
         catch(Exception ex)
@@ -82,18 +83,13 @@
         }
     }
 
-    private void OnUpdateProgressEntry(ProgressEntry pe)
-    {
-
-    }
-
     void ModalClosed(ModalResult modalResult)
     {
         if (!modalResult.Cancelled)
         {
             try
             {
-                _progressEntries = ProgressService.GetProgressAsync().Result;
+                _progressEntries = ProgressService.GetProgressAsync(currentSelectedPeriod).Result;
                 InvokeAsync(StateHasChanged);
             }
             catch(Exception ex)
@@ -103,5 +99,19 @@
         }
 
         Modal.OnClose -= ModalClosed;
+    }
+
+    private void OnPeriodChanged(ChangeEventArgs e)
+    {
+        currentSelectedPeriod = int.Parse(e.Value.ToString());
+        _progressEntries = ProgressService.GetProgressAsync(currentSelectedPeriod).Result;
+    }
+
+    private void ShowEditProgressEntryModal(ProgressEntry pe)
+    {
+        Modal.OnClose += ModalClosed;
+        var parameters = new ModalParameters();
+        parameters.Add("pe", pe);
+        Modal.Show<EditProgressEntryModal>("Update entry", parameters);
     }
 }

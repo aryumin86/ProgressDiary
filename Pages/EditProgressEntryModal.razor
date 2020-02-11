@@ -1,0 +1,48 @@
+﻿@using DayProgress.Data
+@inject DayProgress.Services.ProgressService ProgressService
+@inject IModalService ModalService
+@inject IToastService ToastService
+
+<div class="simple-form">
+    <div class="form-group">
+        <textarea rows="5" @bind="pe.Content" class="form-control"
+                  placeholder="Enter progress entry data" />
+    </div>
+    <button @onclick="UpdateProgressEntry" class="btn btn-primary">Update</button>
+    <button @onclick="Cancel" class="btn btn-secondary">Cancel</button>
+</div>
+
+@code {
+    
+    [CascadingParameter] 
+    ModalParameters Parameters { get; set; }
+
+    private ProgressEntry pe { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        pe = Parameters.Get<ProgressEntry>("pe");
+    }
+
+    private void UpdateProgressEntry()
+    {
+        try
+        {
+            ProgressService.UpdateProgressEntry(pe);
+            ModalService.Close(ModalResult.Ok($"Form was submitted successfully."));
+            ToastService.ShowSuccess("Entry was updated");
+        }
+        catch (Exception ex)
+        {
+            ModalService.Close(ModalResult.Ok($"Form was submitted with error."));
+            ToastService.ShowError("Error. Entry wasn't updated");
+        }
+
+    }
+
+    private void Cancel()
+    {
+        ModalService.Close(ModalResult.Cancel());
+    }
+}
+

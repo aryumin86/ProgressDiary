@@ -12,7 +12,6 @@ namespace DayProgress.Repo
     {
         private string _dbConnString;
         private IConfiguration _config;
-        private const int _maxContentLengthToDisplay = 250;
         public ProgressEntryRepo(IConfiguration config){            
             _config = config;
             _dbConnString = _config.GetValue<string>("dbConnectionString");
@@ -37,8 +36,8 @@ namespace DayProgress.Repo
                             WhenCreated = reader.GetDateTime(reader.GetOrdinal("WhenCreated"))
                         };
 
-                        if (!string.IsNullOrWhiteSpace(pe.Content) && pe.Content.Length > _maxContentLengthToDisplay)
-                            pe.Content = pe.Content.Substring(0, _maxContentLengthToDisplay) + "...";
+                        //if (!string.IsNullOrWhiteSpace(pe.Content) && pe.Content.Length > _maxContentLengthToDisplay)
+                        //    pe.Content = pe.Content.Substring(0, _maxContentLengthToDisplay) + "...";
 
                         result.Add(pe);
                     }  
@@ -71,8 +70,16 @@ namespace DayProgress.Repo
             }
         }
 
-        public void UpdateProgressEntry(){
-            throw new NotImplementedException();
+        public void UpdateProgressEntry(ProgressEntry entry){
+            string query = "update ProgressEntries set Content = @content where Id = @id";
+            using (var conn = new MySqlConnection(_dbConnString))
+            {
+                conn.Open();
+                var command = new MySqlCommand(query, conn);
+                command.Parameters.AddWithValue("@id", entry.Id);
+                command.Parameters.AddWithValue("@content", entry.Content);
+                command.ExecuteNonQuery();
+            }
         }
 
         

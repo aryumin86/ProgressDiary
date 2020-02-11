@@ -74,25 +74,29 @@ namespace DayProgress.Services
             },
         };
 
-        public Task<IEnumerable<ProgressEntry>> GetProgressAsync()
+        public Task<IEnumerable<ProgressEntry>> GetProgressAsync(int lastNDays)
         {
             //return Task.FromResult(ProgressTestArray);
-            return Task.FromResult(_repo.GetProgressEntries(new int[0]));
+            return Task.FromResult(_repo.GetProgressEntries(new int[0], lastNDays));
         }
 
         public Task<IEnumerable<ProgressTag>> GetProgressTagsAsync(){
             return Task.FromResult(ProgressTestArray.SelectMany(x => x.Tags).Distinct());
         }
 
-        public Task DeleteProgressEntryAsync(int id)
+        public void DeleteProgressEntryAsync(int id)
         {
             _repo.DeleteProgressEntry(id);
-            return Task.FromResult(0);
         }
 
         public void CreateProgressEntry(ProgressEntry progressEntry)
         {
             _repo.CreateProgressEntry(progressEntry);
+        }
+
+        public void UpdateProgressEntry(ProgressEntry progressEntry)
+        {
+            _repo.UpdateProgressEntry(progressEntry);
         }
     }
 }
