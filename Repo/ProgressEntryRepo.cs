@@ -35,16 +35,13 @@ namespace DayProgress.Repo
                             Content = reader.GetString(reader.GetOrdinal("Content")),
                             WhenCreated = reader.GetDateTime(reader.GetOrdinal("WhenCreated"))
                         };
-
-                        //if (!string.IsNullOrWhiteSpace(pe.Content) && pe.Content.Length > _maxContentLengthToDisplay)
-                        //    pe.Content = pe.Content.Substring(0, _maxContentLengthToDisplay) + "...";
-
+                        
                         result.Add(pe);
                     }  
                 }  
             }
 
-            return result;
+            return result.OrderByDescending(e => e.WhenCreated);
         }
 
         public void CreateProgressEntry(ProgressEntry entry){

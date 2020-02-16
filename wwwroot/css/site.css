@@ -184,41 +184,53 @@ app {
 
 #progressHeaderContainer {
     display: grid;
-    grid-template-columns: 10vw 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     column-gap: .5vw;
 }
 
 #progressItemsContainer {
+    grid-auto-flow: row;
     margin-top: 2vw;
     margin-bottom: 1vw;
     display: grid;
-    column-gap: .8vw;
-    row-gap: .8vw;
-    grid-template-columns: repeat(3, 1fr);
-    grid-auto-flow: row;
 }
 
-#progressItemsContainer > div {
-    display: grid;
-    background-color: rgb(237, 241, 201);
-    font-size: 1em;
-    padding: .5vw;
-    box-shadow: 0 0 5px rgba(0,0,0,0.5);
-    border-radius: .5vw;
-    grid-template-areas: 
-    "progressItemCreateDate progressItemCreateDate progressItemCreateDate removeProgressItemButton"
-    "progressItemContent progressItemContent progressItemContent progressItemContent"
-    "progressItemTags progressItemTags progressItemTags progressItemTags";
-    grid-template-rows: 2fr 5fr 2fr;
+@media (max-width: 768px) {
+    #progressItemsContainer {
+        column-gap: 2%;
+        grid-row-gap: 5%;
+        /*grid-template-columns: repeat(2, 1fr);*/
+    }
 }
 
-#progressItemsContainer > div:hover {
-    cursor: pointer;
+@media (min-width: 768px) {
+    #progressItemsContainer {
+        column-gap: 1vw;
+        grid-row-gap: .8vw;
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
+
+    #progressItemsContainer > div {
+        display: grid;
+        background-color: rgb(237, 241, 201);
+        font-size: 1em;
+        padding: .5vw;
+        box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        border-radius: .5vw;
+        grid-template-areas: 
+        "progressItemCreateDate progressItemCreateDate progressItemCreateDate removeProgressItemButton"
+        "progressItemContent progressItemContent progressItemContent progressItemContent";
+        grid-template-rows: 2fr 5fr;
+    }
+
+    #progressItemsContainer > div:hover {
+        cursor: pointer;
+    }
 
 .progressItemCreateDate {
     grid-area: progressItemCreateDate;
-    font-size: 1vw;
+    font-size: 1fr;
     color: blue;
 }
 
@@ -227,9 +239,9 @@ app {
     justify-self: end;
 }
 
-.removeProgressItemButton:hover {
-    color:red;
-}
+    .removeProgressItemButton:hover {
+        color:red;
+    }
 
 .progressItemContent {
     grid-area: progressItemContent;
@@ -246,56 +258,6 @@ app {
 #progressItemsContainer > div:hover {
     background-color: rgb(240, 227, 108);
 }
-
-/*
-    .toast {
-    display: none;
-    padding: 1.5rem;
-    color: #fff;
-    z-index: 1;
-    position: absolute;
-    width: 25rem;
-    top: 2rem;
-    border-radius: 1rem;
-    left: 50%;
-}
-
-.toast-icon {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 0 1rem;
-    font-size: 2.5rem;
-}
-
-.toast-body {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    padding-left: 1rem;
-}
-
-    .toast-body p {
-        margin-bottom: 0;
-    }
-
-.toast-visible {
-    display: flex;
-    flex-direction: row;
-    animation: fadein 1.5s;
-}
-
-@keyframes fadein {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-*/
 
 .blazored-custom-modal {
     display: flex;
