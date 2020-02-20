@@ -2,7 +2,7 @@
 (
  Id int(11) not null auto_increment,
  Content varchar(2000), 
- WhenCreated DATETIME DEFAULT   CURRENT_TIMESTAMP,
+ WhenCreated DATETIME DEFAULT   '1970-01-01 00:00:01',
  constraint pk primary key (Id)
 );
 

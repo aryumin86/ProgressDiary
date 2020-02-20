@@ -13,6 +13,8 @@ using DayProgress.Data;
 using DayProgress.Services;
 using Blazored.Toast;
 using Blazored.Modal;
+using System.Net;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace DayProgress
 {
@@ -29,6 +31,14 @@ namespace DayProgress
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardLimit = 2;
+                options.KnownProxies.Add(IPAddress.Parse("127.0.0.1"));
+                options.ForwardedHeaders = 
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
@@ -41,6 +51,8 @@ namespace DayProgress
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseForwardedHeaders();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -62,6 +74,8 @@ namespace DayProgress
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+
+            app.UsePathBase("/app");
         }
     }
 }
