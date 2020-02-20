@@ -22,7 +22,11 @@ namespace DayProgress
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder
+                    .UseKestrel()
+                    .UseContentRoot(Directory.GetCurrentDirectory())
+                    .UseStartup<Startup>()
+                    .UseUrls("http://localhost:44379");
                 });
     }
 }
