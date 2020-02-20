@@ -75,7 +75,7 @@ namespace DayProgress
                 endpoints.MapFallbackToPage("/_Host");
             });
 
-            app.UsePathBase("/app");
+            //app.UsePathBase("/");
         }
     }
 }
